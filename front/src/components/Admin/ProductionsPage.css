@@ -1,0 +1,150 @@
+.productions-container {
+    max-width: 1000px;
+    margin: 40px auto 0 auto;
+    padding: 40px 30px 30px 30px;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #f8fafc 60%, #eaf6fb 100%);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(44,62,80,0.10);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #2c3e50;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+    border-left: 4px solid #3498db;
+    margin-bottom: 40px;
+}
+
+.timeline-item {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.timeline-dot {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #3498db 60%, #8e44ad 100%);
+    border-radius: 50%;
+    position: absolute;
+    left: -13px;
+    top: 5px;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+}
+
+.timeline-content {
+    background: #f9f9f9;
+    padding: 18px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.08);
+    border-left: 4px solid #2980b9;
+    transition: box-shadow 0.2s;
+}
+
+.timeline-content h3 {
+    margin-top: 5px;
+    margin-bottom: 8px;
+    color: #2980b9;
+    font-weight: 600;
+}
+
+.date {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.stage {
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.stage-preparation {
+    background: linear-gradient(90deg, #f39c12 70%, #f7ca18 100%);
+}
+
+.stage-assembly {
+    background: linear-gradient(90deg, #2980b9 70%, #6dd5fa 100%);
+}
+
+.stage-finishing {
+    background: linear-gradient(90deg, #8e44ad 70%, #be90d4 100%);
+}
+
+.stage-quality-control {
+    background: linear-gradient(90deg, #27ae60 70%, #2ecc71 100%);
+}
+
+.status {
+    margin-top: 10px;
+    font-weight: bold;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.status-in-progress {
+    background: linear-gradient(90deg, #f1c40f 70%, #f9e79f 100%);
+    color: #fff;
+}
+
+.status-completed {
+    background: linear-gradient(90deg, #2ecc71 70%, #b2f7cc 100%);
+    color: #fff;
+}
+
+.prediction-block {
+    margin-top: 12px;
+    background: linear-gradient(135deg, #eaf6fb 60%, #f8fafc 100%);
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+    border-left: 4px solid #27ae60;
+}
+
+.prediction-block ul {
+    padding-left: 18px;
+    margin-bottom: 8px;
+}
+
+.prediction-block li {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.charts-container {
+    margin-top: 40px;
+    gap: 24px;
+}
+
+.card {
+    border-radius: 18px !important;
+    box-shadow: 0 4px 24px rgba(44,62,80,0.08) !important;
+    border: none !important;
+    background: linear-gradient(135deg, #f8fafc 60%, #eaf6fb 100%) !important;
+    padding: 1.5rem 1.5rem 1rem 1.5rem !important;
+}
+
+@media (max-width: 900px) {
+    .productions-container {
+        padding: 16px 4px;
+    }
+    .charts-container {
+        flex-direction: column;
+    }
+}

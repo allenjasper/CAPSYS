@@ -1,0 +1,199 @@
+/* Body Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f1f1f1; /* Neutral light background */
+    color: #2c3e50; /* Dark grey text for readability */
+    margin: 0;
+    padding: 0;
+}
+
+/* Header Section */
+h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #e74c3c; /* Red color to evoke energy, similar to athletic brands */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Input Field */
+input[type="text"] {
+    background-color: #ffffff; /* Clean white background */
+    border: 1px solid #cccccc; /* Subtle grey border */
+    color: #2c3e50; /* Dark grey text */
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #e74c3c; /* Red focus border */
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5); /* Focus shadow with red accent */
+}
+
+
+/* Product Cards */
+.product-card {
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 20px;
+    background: transparent;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+/* Image container with fixed height */
+.image-container {
+    width: 100%;
+    height: 220px; /* Adjusted height */
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: #ecf0f1; /* Light grey fallback for image */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Uniform product image styling */
+.product-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 1rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.product-card h5 {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    color: #e74c3c;
+    text-align: center;
+}
+
+.product-card .card-text {
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.product-card .text-danger {
+    color: #27ae60;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* Badges positioned over the image */
+.position-relative .badge {
+    z-index: 2;
+}
+
+/* Hide the white card */
+.card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Product Details */
+.product-card .product-name {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #e74c3c; /* Red for the product name */
+    margin-top: 10px;
+    text-align: center;
+}
+
+.product-card .product-description {
+    font-size: 0.9rem;
+    color: #7f8c8d; /* Lighter grey for description */
+    margin-top: 8px;
+    text-align: center;
+}
+
+.product-card .product-price {
+    font-size: 1.2rem;
+    color: #27ae60; /* Green for price */
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+
+/* Spinner */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+    color: #e74c3c; /* Red spinner color to match theme */
+}
+
+/* Texts */
+.text-primary {
+    color: #e74c3c; /* Red for primary text */
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Container Styling */
+.container {
+    max-width: 1200px;
+    margin-left: 300px;
+    padding: 20px;
+}
+
+/* Button Styling */
+.btn {
+    background-color: #4d2521; /* Red button for action */
+    color: white;
+    padding: 2px 1px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #442926; /* Darker red on hover */
+}
+
+/* Footer Styling */
+footer {
+    background-color: #2c3e50; /* Dark footer background */
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+/* Override default container margin for customer dashboard */
+.customer-dashboard.container {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 1200px;
+}
+
+.customer-dashboard .card {
+    margin-top: 20px;
+}
+
+.custom-modal {
+    max-width: 500px;
+    width: 50%;
+  }
+  
+  .custom-modal .modal-content {
+    max-height: 250vh;
+    overflow-y: auto;
+  }
+  
+  
