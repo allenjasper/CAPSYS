@@ -13,68 +13,101 @@ class AuthController extends Controller
     // REGISTER FUNCTION
     public function register(Request $request)
     {
-        // Validate request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'role' => 'required|in:customer,employee'
-        ]);
+        try {
+            // Validate request
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:6',
+                'role' => 'required|in:customer,employee'
+            ]);
 
-        // Create user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role
-        ]);
+            // Create user
+            $user = User::create([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
+                'role' => $validatedData['role']
+            ]);
 
-        // Generate token
-        $token = $user->createToken('API Token')->plainTextToken;
+            // Generate token
+            $token = $user->createToken('API Token')->plainTextToken;
 
-        // Return response
-        return response()->json([
-            'message' => 'User registered successfully',
-            'user' => $user,
-            'token' => $token
-        ], 201);
+            // Return response
+            return response()->json([
+                'success' => true,
+                'message' => 'User registered successfully',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // LOGIN FUNCTION
     public function login(Request $request)
     {
-        // Validate request
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string'
-        ]);
-
-        // Attempt to authenticate user
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.']
+        try {
+            // Validate request
+            $validatedData = $request->validate([
+                'email' => 'required|string|email',
+                'password' => 'required|string'
             ]);
+
+            // Attempt to authenticate user
+            if (!Auth::attempt($validatedData)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Login failed',
+                    'error' => 'The provided credentials are incorrect.'
+                ], 401);
+            }
+
+            // Generate token for authenticated user
+            $user = Auth::user();
+            $token = $user->createToken('API Token')->plainTextToken;
+
+            // Return response
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token
+                ]
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Login failed',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Generate token for authenticated user
-        $user = Auth::user();
-        $token = $user->createToken('API Token')->plainTextToken;
-
-        // Return response
-        return response()->json([
-            'message' => 'Login successful',
-            'user' => $user,
-            'token' => $token
-        ], 200);
     }
 
     // LOGOUT FUNCTION
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        try {
+            $request->user()->tokens()->delete();
 
-        return response()->json([
-            'message' => 'Logged out successfully'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Logged out successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Logout failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
