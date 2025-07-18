@@ -1,313 +1,400 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { ShoppingCart, User } from "lucide-react";
-import { LayoutDashboard, Package, ClipboardList, Boxes, Factory, BarChart } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ShoppingCart,
+  User,
+  Menu,
+  X,
+  LayoutDashboard,
+  Package,
+  ClipboardList,
+  Boxes,
+  Factory,
+  BarChart,
+  LogOut,
+  Settings,
+  Bell,
+  Search,
+  Home,
+} from 'lucide-react';
 
+import { getCurrentUser, isAuthenticated, logout, isAdmin, getDisplayName } from '../utils/auth';
+import { USER_ROLES } from '../utils/constants';
+import apiService from '../services/api';
 
+/**
+ * Modern Header Component with responsive navigation and user management
+ */
+const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-// 🧠 Get role and username from localStorage
-const getUserData = () => ({
-    username: localStorage.getItem("username") || "Guest",
-    role: localStorage.getItem("role") || "User",
-    token: localStorage.getItem("token") || null,
-});
+  const user = getCurrentUser();
+  const authenticated = isAuthenticated();
+  const isUserAdmin = isAdmin();
 
-// 🔷 Header Component
-const Header = ({ role, username }) => {
-    const navigate = useNavigate();
-    const [cartCount, setCartCount] = useState(0);
+  // Fetch cart count for customers
+  useEffect(() => {
+    if (authenticated && user?.role === USER_ROLES.CUSTOMER) {
+      fetchCartCount();
+      // Set interval to refresh cart count
+      const interval = setInterval(fetchCartCount, 30000); // Every 30 seconds
+      return () => clearInterval(interval);
+    }
+  }, [authenticated, user]);
 
-    useEffect(() => {
-        if (role === "customer") {
-            const fetchCartCount = async () => {
-                try {
-                    const token = localStorage.getItem("token");
-                    if (!token) throw new Error("User not authenticated.");
+  const fetchCartCount = async () => {
+    try {
+      const cartData = await apiService.get('/cart');
+      const totalItems = Array.isArray(cartData) 
+        ? cartData.reduce((sum, item) => sum + (item.quantity || 0), 0)
+        : 0;
+      setCartCount(totalItems);
+    } catch (error) {
+      console.error('Failed to fetch cart count:', error);
+    }
+  };
 
-                    const response = await axios.get("http://localhost:8000/api/cart", {
-                        headers: { Authorization: `Bearer ${token}` },
-                    });
-                    const totalItems = response.data.reduce((sum, item) => sum + item.quantity, 0);
-                    setCartCount(totalItems);
-                } catch (err) {
-                    console.error("Failed to fetch cart count:", err);
-                }
-            };
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+  };
 
-            fetchCartCount();
-            const interval = setInterval(fetchCartCount, 1000);
-            return () => clearInterval(interval);
-        }
-    }, [role]);
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsMenuOpen(false);
+  };
 
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate("/login");
-    };
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setIsSearchOpen(false);
+    }
+  };
 
+  // Navigation items based on user role
+  const getNavigationItems = () => {
+    if (!authenticated) return [];
+
+    const baseItems = [
+      {
+        label: 'Dashboard',
+        path: '/dashboard',
+        icon: LayoutDashboard,
+        active: location.pathname === '/dashboard',
+      },
+    ];
+
+    if (isUserAdmin) {
+      return [
+        ...baseItems,
+        {
+          label: 'Products',
+          path: '/product',
+          icon: Package,
+          active: location.pathname === '/product',
+        },
+        {
+          label: 'Orders',
+          path: '/orders',
+          icon: ClipboardList,
+          active: location.pathname === '/orders',
+        },
+        {
+          label: 'Inventory',
+          path: '/inventory',
+          icon: Boxes,
+          active: location.pathname === '/inventory',
+        },
+        {
+          label: 'Production',
+          path: '/productions',
+          icon: Factory,
+          active: location.pathname === '/productions',
+        },
+        {
+          label: 'Reports',
+          path: '/reports',
+          icon: BarChart,
+          active: location.pathname === '/reports',
+        },
+      ];
+    } else {
+      return [
+        ...baseItems,
+        {
+          label: 'Products',
+          path: '/dashboard',
+          icon: Package,
+          active: location.pathname === '/dashboard',
+        },
+      ];
+    }
+  };
+
+  const navigationItems = getNavigationItems();
+
+  if (!authenticated) {
     return (
-        <header style={role === "customer" ? styles.headerTransparent : styles.headerSolid}>
-            <div style={styles.left} onClick={() => navigate("/dashboard")}>
-                <h2 style={styles.logo}>UNICK FURNITURE</h2>
+      <header className="nav-header">
+        <div className="container">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/')}
+                className="nav-brand"
+              >
+                <span className="font-display">Unick Furniture</span>
+              </button>
             </div>
 
-            <div style={styles.right}>
-                {role === "customer" && (
-                    <button style={styles.iconBtn} onClick={() => navigate("/cart")}>
-                        <ShoppingCart size={24} />
-                        {cartCount > 0 && <span style={styles.cartBadge}>{cartCount}</span>}
-                    </button>
-                )}
-                <span style={styles.username}><User size={20} /> {username}</span>
-                <button style={styles.logoutBtn} onClick={handleLogout}>Logout</button>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate('/login')}
+                className="btn btn-secondary btn-sm"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => navigate('/register')}
+                className="btn btn-primary btn-sm"
+              >
+                Sign Up
+              </button>
             </div>
-        </header>
-    );
-};
-
-// 🔸 Sidebar for Admin
-const Sidebar = () => {
-    const navigate = useNavigate();
-    const username = localStorage.getItem("username") || "Guest";
-
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate("/login");
-    };
-
-    return (
-        <div style={styles.sidebarModern}>
-            <div>
-                <div style={styles.brandModern} onClick={() => navigate("/dashboard")}>
-                    <Factory size={30} style={{ marginRight: "10px" }} />
-                    <span>Unick</span>
-                </div>
-
-                <div style={styles.userModern}>
-                    <User size={22} />
-                    <span>{username}</span>
-                </div>
-
-                <nav style={styles.navModern}>
-                    <button style={styles.navItem} onClick={() => navigate("/dashboard")}>
-                        <LayoutDashboard size={20} /> Dashboard
-                    </button>
-                    <button style={styles.navItem} onClick={() => navigate("/product")}>
-                        <Package size={20} /> Products
-                    </button>
-                    <button style={styles.navItem} onClick={() => navigate("/orders")}>
-                        <ClipboardList size={20} /> Orders
-                    </button>
-                    <button style={styles.navItem} onClick={() => navigate("/inventory")}>
-                        <Boxes size={20} /> Inventory
-                    </button>
-                    <button style={styles.navItem} onClick={() => navigate("/productions")}>
-                        <Factory size={20} /> Productions
-                    </button>
-                    <button style={styles.navItem} onClick={() => navigate("/reports")}>
-                        <BarChart size={20} /> Reports
-                    </button>
-                </nav>
-            </div>
-
-            <button style={styles.logoutModern} onClick={handleLogout}>
-                Logout
-            </button>
+          </div>
         </div>
+      </header>
     );
-};
+  }
 
-// 📦 Final Layout
-const AppLayout = ({ children }) => {
-    const { role, username } = getUserData();
-
-    return (
-        <>
-            {/* Show header only for customer */}
-            {role === "customer" && <Header role={role} username={username} />}
-            
-            {/* Show sidebar only for employees/admins */}
-            {role !== "customer" && <Sidebar />}
-
-            {/* Adjust layout spacing depending on role */}
-            <div
-                style={{
-                    marginLeft: role !== "customer" ? "250px" : 0,
-                    marginTop: role === "customer" ? "60px" : 0,
-                    padding: "1rem",
-                }}
+  return (
+    <header className="nav-header">
+      <div className="container">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo and Brand */}
+          <div className="flex items-center">
+            <button
+              onClick={() => handleNavigation('/dashboard')}
+              className="nav-brand flex items-center gap-2"
             >
-                {children}
+              <Home size={24} className="text-primary-color" />
+              <span className="font-display">Unick Furniture</span>
+            </button>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
+            {navigationItems.map((item) => {
+              const IconComponent = item.icon;
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavigation(item.path)}
+                  className={`
+                    nav-link flex items-center gap-2 px-3 py-2 rounded-md transition-colors
+                    ${item.active ? 'bg-primary-color text-white' : 'hover:bg-background-secondary'}
+                  `}
+                >
+                  <IconComponent size={18} />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center gap-3">
+            {/* Search Button */}
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="p-2 rounded-md hover:bg-background-secondary transition-colors"
+              title="Search"
+            >
+              <Search size={20} />
+            </button>
+
+            {/* Cart Button (Customer only) */}
+            {user?.role === USER_ROLES.CUSTOMER && (
+              <button
+                onClick={() => handleNavigation('/cart')}
+                className="relative p-2 rounded-md hover:bg-background-secondary transition-colors"
+                title="Shopping Cart"
+              >
+                <ShoppingCart size={20} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-error-color text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* Notifications */}
+            <button
+              className="relative p-2 rounded-md hover:bg-background-secondary transition-colors"
+              title="Notifications"
+            >
+              <Bell size={20} />
+              {notifications.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-warning-color text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {notifications.length}
+                </span>
+              )}
+            </button>
+
+            {/* User Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="flex items-center gap-2 p-2 rounded-md hover:bg-background-secondary transition-colors"
+                title="User Menu"
+              >
+                <div className="w-8 h-8 bg-primary-color text-white rounded-full flex items-center justify-center">
+                  <User size={16} />
+                </div>
+                <span className="hidden lg:block text-sm font-medium">
+                  {getDisplayName()}
+                </span>
+              </button>
+
+              {/* User Dropdown Menu */}
+              <AnimatePresence>
+                {isMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-2 w-64 bg-surface border border-border-color rounded-lg shadow-lg z-50"
+                  >
+                    {/* User Info */}
+                    <div className="px-4 py-3 border-b border-border-color">
+                      <p className="text-sm font-medium text-text-primary">
+                        {getDisplayName()}
+                      </p>
+                      <p className="text-xs text-text-muted capitalize">
+                        {user?.role || 'User'}
+                      </p>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      {/* Mobile Navigation */}
+                      <div className="md:hidden">
+                        {navigationItems.map((item) => {
+                          const IconComponent = item.icon;
+                          return (
+                            <button
+                              key={item.path}
+                              onClick={() => handleNavigation(item.path)}
+                              className={`
+                                w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-background-secondary transition-colors
+                                ${item.active ? 'bg-background-secondary text-primary-color' : ''}
+                              `}
+                            >
+                              <IconComponent size={16} />
+                              {item.label}
+                            </button>
+                          );
+                        })}
+                        <hr className="my-2 border-border-color" />
+                      </div>
+
+                      <button
+                        onClick={() => handleNavigation('/profile')}
+                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-background-secondary transition-colors"
+                      >
+                        <Settings size={16} />
+                        Settings
+                      </button>
+
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2 text-sm text-left hover:bg-background-secondary text-error-color transition-colors"
+                      >
+                        <LogOut size={16} />
+                        Logout
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-        </>
-    );
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-md hover:bg-background-secondary transition-colors"
+              title="Menu"
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <AnimatePresence>
+          {isSearchOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="border-t border-border-color py-4"
+            >
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="flex-1 form-input"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={!searchQuery.trim()}
+                >
+                  Search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-50"
+            onClick={() => setIsMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+    </header>
+  );
 };
 
-const styles = {
-    headerTransparent: {
-        width: "100%",
-        height: "60px",
-        backgroundColor: "rgba(255, 255, 255, 0.85)",
-        backdropFilter: "blur(8px)",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "0 2rem",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 999,
-        boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-    },
-    headerSolid: {
-        width: "100%",
-        height: "60px",
-        backgroundColor: "#333",
-        color: "#fff",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "0 2rem",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 999,
-    },
-    left: {
-        display: "flex",
-        alignItems: "center",
-        cursor: "pointer",
-    },
-    right: {
-        display: "flex",
-        alignItems: "center",
-        gap: "1.5rem",
-    },
-    logo: {
-        fontSize: "1.5rem",
-        fontWeight: "bold",
-        color: "#333",
-    },
-    username: {
-        display: "flex",
-        alignItems: "center",
-        fontSize: "1rem",
-        gap: "0.5rem",
-        color: "#333",
-    },
-    iconBtn: {
-        background: "none",
-        border: "none",
-        position: "relative",
-        cursor: "pointer",
-    },
-    cartBadge: {
-        position: "absolute",
-        top: "-6px",
-        right: "-8px",
-        backgroundColor: "#ff2e2e",
-        color: "#fff",
-        fontSize: "0.75rem",
-        borderRadius: "50%",
-        padding: "2px 6px",
-    },
-    logoutBtn: {
-        backgroundColor: "#ff4d4f",
-        color: "#fff",
-        border: "none",
-        borderRadius: "4px",
-        padding: "6px 12px",
-        cursor: "pointer",
-    },
-
-    
-    sidebarModern: {
-        background: "linear-gradient(to bottom, #4b2e1d, #2e1a10)", // Deep wood tone
-        color: "#f5e8d6",
-        width: "260px",
-        height: "100vh",
-        padding: "2rem 1.5rem",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        boxShadow: "4px 0 15px rgba(0, 0, 0, 0.5)",
-        fontFamily: "'Georgia', serif",
-    },
-    
-    brandModern: {
-        display: "flex",
-        alignItems: "center",
-        fontSize: "1.6rem",
-        fontWeight: "bold",
-        color: "#fff3dc",
-        marginBottom: "2rem",
-        cursor: "pointer",
-        gap: "0.5rem",
-        borderBottom: "1px solid rgba(255,255,255,0.2)",
-        paddingBottom: "1rem",
-    },
-    
-    userModern: {
-        display: "flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        fontSize: "1rem",
-        color: "#ffeccc",
-        marginBottom: "2rem",
-        paddingLeft: "2px",
-        borderBottom: "1px dashed rgba(255,255,255,0.15)",
-        paddingBottom: "0.5rem",
-    },
-    
-    navModern: {
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem",
-    },
-    
-    navItem: {
-        background: "rgba(255,255,255,0.05)",
-        color: "#fff3dc",
-        border: "none",
-        padding: "0.85rem 1rem",
-        borderRadius: "12px",
-        fontSize: "1rem",
-        display: "flex",
-        alignItems: "center",
-        gap: "0.75rem",
-        fontWeight: "600",
-        letterSpacing: "0.4px",
-        cursor: "pointer",
-        transition: "all 0.3s ease",
-    },
-    navItemHover: {
-        background: "rgba(255,255,255,0.15)",
-        transform: "translateX(6px)",
-    },
-    
-    logoutModern: {
-        backgroundColor: "#a3472b",
-        color: "#fff4e0",
-        border: "none",
-        padding: "0.85rem 1.2rem",
-        fontSize: "1rem",
-        fontWeight: "bold",
-        borderRadius: "12px",
-        cursor: "pointer",
-        fontFamily: "'Georgia', serif",
-        letterSpacing: "0.5px",
-        transition: "all 0.3s ease",
-    },
-    
-    
-    
-
-
-};
-
-
-export default AppLayout;
+export default Header;
