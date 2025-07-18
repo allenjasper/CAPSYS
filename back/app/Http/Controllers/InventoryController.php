@@ -22,6 +22,11 @@ class InventoryController extends Controller
         return Inventory::create($validated);
     }
 
+    public function show($id)
+    {
+        return response()->json(Inventory::findOrFail($id));
+    }
+
     public function update(Request $request, $id)
     {
         $inventory = Inventory::findOrFail($id);

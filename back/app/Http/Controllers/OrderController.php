@@ -19,7 +19,7 @@ class OrderController extends Controller
         $user = Auth::user();
         if (!$user) return response()->json(['message' => 'Unauthorized'], 401);
 
-        $order = Order::create(['customer_id' => $user->id, 'status' => 'pending']);
+        $order = Order::create(['user_id' => $user->id, 'status' => 'pending']);
 
         foreach ($request->items as $item) {
             OrderItem::create([
@@ -35,7 +35,7 @@ class OrderController extends Controller
     public function myOrders()
     {
         $user = Auth::user();
-        return response()->json(Order::where('customer_id', $user->id)->with('items.product')->get());
+        return response()->json(Order::where('user_id', $user->id)->with('items.product')->get());
     }
 
     public function updateStatus(Request $request, $id)
@@ -44,5 +44,19 @@ class OrderController extends Controller
         $order->status = $request->status;
         $order->save();
         return response()->json(['message' => 'Updated']);
+    }
+
+    public function show($id)
+    {
+        $order = Order::with('items.product')->findOrFail($id);
+        return response()->json($order);
+    }
+
+    public function markAsComplete($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->status = 'completed';
+        $order->save();
+        return response()->json(['message' => 'Order marked as complete']);
     }
 }
