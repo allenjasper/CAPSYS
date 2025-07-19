@@ -73,7 +73,7 @@ export const VALIDATION = {
   EMAIL_PATTERN: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   PASSWORD_MIN_LENGTH: 8,
   NAME_MIN_LENGTH: 2,
-  PHONE_PATTERN: /^\+?[\d\s\-\(\)]+$/,
+  PHONE_PATTERN: /^\+?[\d\s\-()]+$/,
 };
 
 // UI Constants
@@ -189,7 +189,7 @@ export const FILE_UPLOAD = {
   MAX_FILES: 5,
 };
 
-export default {
+const constants = {
   API_BASE_URL,
   API_ENDPOINTS,
   USER_ROLES,
@@ -208,3 +208,5 @@ export default {
   ANIMATIONS,
   FILE_UPLOAD,
 };
+
+export default constants;
