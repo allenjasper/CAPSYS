@@ -88,7 +88,6 @@ const ProtectedRoute = ({ children, requiredRole = null, redirectTo = '/login' }
  */
 const PublicRoute = ({ children }) => {
   const authenticated = isAuthenticated();
-  const user = getCurrentUser();
 
   if (authenticated) {
     const dashboardPath = '/dashboard';

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-import { getCurrentUser, isAuthenticated, isAdmin } from '../utils/auth';
+import { getCurrentUser, isAuthenticated } from '../utils/auth';
 import { USER_ROLES } from '../utils/constants';
 import LoadingSpinner from './ui/LoadingSpinner';
 import AdminDashboard from './Admin/AdminDashboard';

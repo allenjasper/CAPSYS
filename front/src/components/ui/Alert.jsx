@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
 
@@ -19,6 +19,13 @@ const Alert = ({
 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    if (onClose) {
+      setTimeout(onClose, 150); // Delay to allow animation
+    }
+  }, [onClose]);
+
   useEffect(() => {
     if (autoClose && duration > 0) {
       const timer = setTimeout(() => {
@@ -27,14 +34,7 @@ const Alert = ({
 
       return () => clearTimeout(timer);
     }
-  }, [autoClose, duration]);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    if (onClose) {
-      setTimeout(onClose, 150); // Delay to allow animation
-    }
-  };
+  }, [autoClose, duration, handleClose]);
 
   if (!isVisible) return null;
 
@@ -152,24 +152,24 @@ export const Toast = ({
   const [isVisible, setIsVisible] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  useEffect(() => {
-    // Enter animation
-    setIsAnimating(true);
-    
-    const timer = setTimeout(() => {
-      handleClose();
-    }, duration);
-
-    return () => clearTimeout(timer);
-  }, [duration]);
-
-  const handleClose = () => {
+  const handleCloseModal = useCallback(() => {
     setIsAnimating(false);
     setTimeout(() => {
       setIsVisible(false);
       if (onClose) onClose();
     }, 300);
-  };
+  }, [onClose]);
+
+  useEffect(() => {
+    // Enter animation
+    setIsAnimating(true);
+    
+    const timer = setTimeout(() => {
+      handleCloseModal();
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [duration, handleCloseModal]);
 
   if (!isVisible) return null;
 
@@ -203,7 +203,7 @@ export const Toast = ({
         title={title}
         message={message}
         dismissible={true}
-        onClose={handleClose}
+        onClose={handleCloseModal}
         className={`shadow-lg ${className}`}
         {...props}
       />

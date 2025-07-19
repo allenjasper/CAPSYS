@@ -157,7 +157,7 @@ export const TableSkeleton = ({ rows = 5, columns = 4, className = '' }) => {
     <div className={`border border-border-color rounded-lg overflow-hidden ${className}`}>
       {/* Header */}
       <div className="bg-background-secondary p-4 border-b border-border-color">
-        <div className="grid grid-cols-${columns} gap-4">
+        <div className={`grid grid-cols-${columns} gap-4`}>
           {Array.from({ length: columns }).map((_, index) => (
             <div key={index} className="skeleton h-4 bg-border-color rounded w-3/4"></div>
           ))}
@@ -168,7 +168,7 @@ export const TableSkeleton = ({ rows = 5, columns = 4, className = '' }) => {
       <div className="divide-y divide-border-color">
         {Array.from({ length: rows }).map((_, rowIndex) => (
           <div key={rowIndex} className="p-4 animate-pulse">
-            <div className="grid grid-cols-${columns} gap-4">
+            <div className={`grid grid-cols-${columns} gap-4`}>
               {Array.from({ length: columns }).map((_, colIndex) => (
                 <div key={colIndex} className="skeleton h-4 bg-border-color rounded"></div>
               ))}

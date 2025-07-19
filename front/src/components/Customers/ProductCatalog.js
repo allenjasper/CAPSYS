@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button, Form, Badge } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -39,7 +39,7 @@ const ProductCatalog = ({ products }) => {
                 return;
             }
 
-            const response = await axios.post(
+            await axios.post(
                 "http://localhost:8000/api/cart",
                 {
                     product_id: selectedProduct.id,
