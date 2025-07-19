@@ -1,0 +1,37 @@
+<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="woodGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#D2691E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A0522D;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background wood texture -->
+  <rect x="0" y="0" width="200" height="80" fill="url(#woodGradient)" rx="8" ry="8" opacity="0.1"/>
+  
+  <!-- Tree/Wood icon -->
+  <g transform="translate(10, 15)">
+    <!-- Tree trunk -->
+    <rect x="18" y="35" width="8" height="15" fill="#8B4513"/>
+    <!-- Tree crown -->
+    <circle cx="22" cy="25" r="15" fill="#228B22" opacity="0.8"/>
+    <!-- Wood rings -->
+    <circle cx="22" cy="25" r="12" fill="none" stroke="#8B4513" stroke-width="1" opacity="0.6"/>
+    <circle cx="22" cy="25" r="8" fill="none" stroke="#8B4513" stroke-width="1" opacity="0.6"/>
+  </g>
+  
+  <!-- Company Name -->
+  <text x="60" y="30" font-family="Georgia, serif" font-size="24" font-weight="bold" fill="#8B4513" filter="url(#shadow)">
+    UNICK
+  </text>
+  <text x="60" y="50" font-family="Georgia, serif" font-size="14" font-weight="normal" fill="#A0522D">
+    ENTERPRISES INC.
+  </text>
+  <text x="60" y="65" font-family="Arial, sans-serif" font-size="10" font-style="italic" fill="#696969">
+    Woodcraft Furniture Excellence
+  </text>
+</svg>

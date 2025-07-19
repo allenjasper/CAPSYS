@@ -144,28 +144,34 @@ const Header = () => {
 
   if (!authenticated) {
     return (
-      <header className="nav-header">
+      <header className="navbar-wood">
         <div className="container">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/unick-logo.svg" 
+                alt="Unick Enterprises Inc." 
+                className="h-8 w-auto"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
               <button
                 onClick={() => navigate('/')}
-                className="nav-brand"
+                className="navbar-brand"
               >
-                <span className="font-display">Unick Furniture</span>
+                UNICK ENTERPRISES
               </button>
             </div>
 
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate('/login')}
-                className="btn btn-secondary btn-sm"
+                className="btn-wood-outline"
               >
                 Sign In
               </button>
               <button
                 onClick={() => navigate('/register')}
-                className="btn btn-primary btn-sm"
+                className="btn-wood"
               >
                 Sign Up
               </button>
@@ -177,17 +183,22 @@ const Header = () => {
   }
 
   return (
-    <header className="nav-header">
+    <header className="navbar-wood">
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/unick-logo.svg" 
+              alt="Unick Enterprises Inc." 
+              className="h-8 w-auto"
+              style={{ filter: 'brightness(0) invert(1)' }}
+            />
             <button
               onClick={() => handleNavigation('/dashboard')}
-              className="nav-brand flex items-center gap-2"
+              className="navbar-brand flex items-center gap-2"
             >
-              <Home size={24} className="text-primary-color" />
-              <span className="font-display">Unick Furniture</span>
+              <span>UNICK ENTERPRISES</span>
             </button>
           </div>
 
@@ -200,8 +211,8 @@ const Header = () => {
                   key={item.path}
                   onClick={() => handleNavigation(item.path)}
                   className={`
-                    nav-link flex items-center gap-2 px-3 py-2 rounded-md transition-colors
-                    ${item.active ? 'bg-primary-color text-white' : 'hover:bg-background-secondary'}
+                    nav-link flex items-center gap-2 px-3 py-2 rounded-md transition-all
+                    ${item.active ? 'text-white bg-wood-dark' : 'text-white hover:text-wood-accent'}
                   `}
                 >
                   <IconComponent size={18} />
