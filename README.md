@@ -32,4 +32,7 @@ npm install framer-motion
 
 npm install bootstrap
 
+npm install react-toastify
+
+
 npm start
